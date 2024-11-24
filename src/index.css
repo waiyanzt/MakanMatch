@@ -30,7 +30,6 @@ body {
   margin-bottom: 30px;
 }
 
-/* Keep your existing media query */
 @media (hover: none) and (pointer: coarse) {
   select,
   button {
