@@ -168,7 +168,7 @@ export function PreferenceForm() {
             <label
               style={{ display: "block", marginBottom: "8px", color: "#333" }}
             >
-              Cuisine
+              Preferred Cuisine 🌍
             </label>
             <select
               name="cuisine"
@@ -190,7 +190,7 @@ export function PreferenceForm() {
             <label
               style={{ display: "block", marginBottom: "8px", color: "#333" }}
             >
-              Flavor 1
+              Preferred flavour palate one
             </label>
             <select
               name="flavor1"
@@ -212,7 +212,7 @@ export function PreferenceForm() {
             <label
               style={{ display: "block", marginBottom: "8px", color: "#333" }}
             >
-              Flavor 2
+              Preferred flavour palette two
             </label>
             <select
               name="flavor2"
@@ -234,7 +234,7 @@ export function PreferenceForm() {
             <label
               style={{ display: "block", marginBottom: "8px", color: "#333" }}
             >
-              Food Type 1
+              Food preference one
             </label>
             <select
               name="foodType1"
@@ -256,7 +256,7 @@ export function PreferenceForm() {
             <label
               style={{ display: "block", marginBottom: "8px", color: "#333" }}
             >
-              Food Type 2
+              Food preference two
             </label>
             <select
               name="foodType2"
@@ -278,7 +278,7 @@ export function PreferenceForm() {
             <label
               style={{ display: "block", marginBottom: "8px", color: "#333" }}
             >
-              Vibe
+              Vibe for the day 🍸✨
             </label>
             <select
               name="vibe"
