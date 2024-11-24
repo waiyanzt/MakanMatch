@@ -2,15 +2,17 @@ import { Preference, FoodItem, FoodRecommendation } from "../types";
 import { foodDatabase } from "../data/foodData";
 
 interface WeightedScores {
+  cuisineWeight: number;
   flavorWeight: number;
   foodTypeWeight: number;
   vibeWeight: number;
 }
 
 const DEFAULT_WEIGHTS: WeightedScores = {
-  flavorWeight: 0.5, // 50% importance
-  foodTypeWeight: 0.3, // 30% importance
-  vibeWeight: 0.2, // 20% importance
+  cuisineWeight: 0.3, // 30% importance - preferred but not required
+  flavorWeight: 0.3, // 30% importance
+  foodTypeWeight: 0.25, // 25% importance
+  vibeWeight: 0.15, // 15% importance
 };
 
 export function getRecommendations(
@@ -23,21 +25,8 @@ export function getRecommendations(
     return [];
   }
 
-  // First, strictly filter by cuisine if selected
-  let filteredItems = foodItems;
-  if (preferences.cuisine) {
-    filteredItems = filteredItems.filter(
-      (item) => item.cuisine === preferences.cuisine,
-    );
-  }
-
-  // If no items match the cuisine, return empty array
-  if (filteredItems.length === 0) {
-    return [];
-  }
-
-  // Then strictly filter by dietary restrictions
-  filteredItems = filterByDietaryRestrictions(filteredItems, preferences);
+  // First apply strict dietary restrictions
+  let filteredItems = filterByDietaryRestrictions(foodItems, preferences);
 
   // If no items match after dietary filtering, return empty array
   if (filteredItems.length === 0) {
@@ -50,13 +39,11 @@ export function getRecommendations(
     score: calculateMatchScore(item, preferences, weights),
   }));
 
-  // Sort by score descending and filter out low scores
-  const recommendations = scoredItems
+  // Sort by score descending, filter out low scores, and take top 5
+  return scoredItems
     .sort((a, b) => b.score - a.score)
-    .filter((item) => item.score > 40); // Only include items with >40% match
-
-  // Return all matching items (no artificial limit)
-  return recommendations;
+    .filter((item) => item.score > 40) // Only include items with >40% match
+    .slice(0, 5); // Return top 5 matches
 }
 
 function isAnyPreferenceSelected(preferences: Preference): boolean {
@@ -119,17 +106,27 @@ function calculateMatchScore(
   preferences: Preference,
   weights: WeightedScores,
 ): number {
+  const cuisineScore = calculateCuisineScore(item, preferences);
   const flavorScore = calculateFlavorScore(item, preferences);
   const foodTypeScore = calculateFoodTypeScore(item, preferences);
   const vibeScore = calculateVibeScore(item, preferences);
 
   const weightedScore =
+    cuisineScore * weights.cuisineWeight +
     flavorScore * weights.flavorWeight +
     foodTypeScore * weights.foodTypeWeight +
     vibeScore * weights.vibeWeight;
 
   // Convert to percentage and round to nearest integer
   return Math.round(weightedScore * 100);
+}
+
+function calculateCuisineScore(
+  item: FoodItem,
+  preferences: Preference,
+): number {
+  if (!preferences.cuisine) return 1; // If no cuisine preference, give full score
+  return item.cuisine === preferences.cuisine ? 1 : 0.5; // Give partial score for different cuisines
 }
 
 function calculateFlavorScore(item: FoodItem, preferences: Preference): number {
@@ -165,5 +162,5 @@ function calculateFoodTypeScore(
 
 function calculateVibeScore(item: FoodItem, preferences: Preference): number {
   if (!preferences.vibe) return 1;
-  return item.vibe === preferences.vibe ? 1 : 0;
+  return item.vibe === preferences.vibe ? 1 : 0.5; // Give partial score for different vibes
 }
